@@ -6,7 +6,6 @@ freqify <- function(categories, counts) {
 	dat <- c()
 	for(i in 1:length(counts)) {
 		dat <- append(dat, rep(categories[i], counts[i])) 
-		
 	}
 	dat
 }
@@ -36,6 +35,9 @@ for(i in 1:length(events)) {
 n <- 10
 health <- data.frame(events=as.character(events), injuries, fatalities, totalhealth)
 health <- health[with(health, order(-totalhealth)), ][1:min(n, nrow(health)), ]
+plot(1:length(health$events), health$totalhealth, type="b", pch=5, col="blue", axes = FALSE)
+axis(1, at=1:length(health$events), labels=health$events)
+axis(2)
 
 
 
