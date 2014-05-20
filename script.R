@@ -1,14 +1,7 @@
 filename <- "repdata_data_StormData.csv.bz2"
 #all.data <- subset(read.csv("repdata_data_StormData.csv.bz2", header=TRUE), !is.na(EVTYPE))
-raw.data <- all.data#[1:50000,]
+raw.data <- all.data[1:200000,]
 
-freqify <- function(categories, counts) {
-	dat <- c()
-	for(i in 1:length(counts)) {
-		dat <- append(dat, rep(categories[i], counts[i])) 
-	}
-	dat
-}
 
 # STEP 1: Extract data by event type by health and economic harm.
 injuries <- c()
@@ -30,7 +23,9 @@ for(i in 1:length(events)) {
 }
 
 # Set number of events to get.
-n <- 10
+n <- 5
+
+# Set number of chart rows.
 par(mfrow = c(2, 1))
 
 # STEP 2: Prepare and plot health data
@@ -62,32 +57,3 @@ with(economic,{
 	axis(2)
 	legend("topright", pch = 17, col = c("red", "green", "blue"), legend = c("Property Damage", "Crop Damage", "Total"))
 })
-
-# ----------------------------------------------------------------------------------------------
-#plot(1:length(health$evt), health$th, type="b", pch=17, col="blue", axes = FALSE)
-#axis(1, at=1:length(health$evt), labels=health$evt)
-#axis(2)
-
-# Step 3a: Prepare Health Chart
-#plot(1:length(health$events), health$totalhealth, type="l", col="blue")
-#library(lattice)
-#barchart(Species~Reason,data=Reasonstats,groups=Catergory, 
-#         scales=list(x=list(rot=90,cex=0.8)))
-
-#plot(factor(health[,1]), as.numeric(health[,4]), type="h", col="blue")
-#health$total
-#health <- health[with(health, order(-totalhealth)), ]
-
-#print(health)
-
-#economic <- data.frame(cbind(evt=events, propdam, cropdam, cost = totalcost))
-#economic <- economic[order(-totalcost)][1:n, ]
-
-# Step 3a: Prepare Health Chart
-#plot(factor(health[,1]), as.numeric(health[,4]), type="h", col="blue")
-
-
-# ----------------------------------------------------------------------------------------------
-#health <- cbind(et = as.character(events), inj=injuries, fat=fatalities, totalhealth)
-# Step 3a: Prepare Health Chart
-#plot(factor(health[,1]), as.numeric(health[,4]), type="h", col="blue")
