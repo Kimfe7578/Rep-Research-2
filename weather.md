@@ -46,13 +46,6 @@ propdam <- c()
 cropdam <- c()
 totalcost <- c()
 events <- unique(raw.data$EVTYPE)
-```
-
-```
-## Error: object 'raw.data' not found
-```
-
-```r
 
 for (i in 1:length(events)) {
     curr <- subset(raw.data, as.character(EVTYPE) == as.character(events[i]))
@@ -63,10 +56,6 @@ for (i in 1:length(events)) {
     cropdam[i] <- sum(as.numeric(curr$CROPDMG), na.rm = TRUE)
     totalcost[i] <- propdam[i] + cropdam[i]
 }
-```
-
-```
-## Error: object 'events' not found
 ```
 
 
@@ -80,38 +69,13 @@ n <- 5
 # Prepare health data
 health <- data.frame(evt = as.character(events), inj = injuries, fat = fatalities, 
     th = totalhealth)
-```
-
-```
-## Error: object 'events' not found
-```
-
-```r
 health <- health[with(health, order(-th)), ][1:min(n, nrow(health)), ]
-```
-
-```
-## Error: object 'health' not found
-```
-
-```r
 
 # Prepare and economic data
 economic <- data.frame(evt = as.character(events), prop = propdam, crop = cropdam, 
     tc = totalcost)
-```
-
-```
-## Error: object 'events' not found
-```
-
-```r
 economic <- economic[with(economic, order(-tc)), ][1:min(n, nrow(economic)), 
     ]
-```
-
-```
-## Error: object 'economic' not found
 ```
 
 
@@ -124,22 +88,8 @@ We now construct a line graph to identify the top 5 most harmful weather types a
 # Construct titles
 title1.str <- paste("Fig. 1: Overall Health Incidents (Top", min(n, nrow(health)), 
     "Highest Totals)")
-```
-
-```
-## Error: object 'health' not found
-```
-
-```r
 title2.str <- paste("Fig 2: Overall Economic Impact (Largest", min(n, nrow(health)), 
     "Total Losses)")
-```
-
-```
-## Error: object 'health' not found
-```
-
-```r
 
 # Set number of chart rows.
 par(mfrow = c(2, 1))
@@ -155,13 +105,6 @@ with(health, {
     legend("topright", pch = 17, col = c("red", "green", "blue"), legend = c("Fatalities", 
         "Injuries", "Total"))
 })
-```
-
-```
-## Error: object 'health' not found
-```
-
-```r
 
 with(economic, {
     plot(1:length(evt), tc, type = "b", pch = 17, lwd = 3, col = "blue", axes = FALSE, 
@@ -175,9 +118,7 @@ with(economic, {
 })
 ```
 
-```
-## Error: object 'economic' not found
-```
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
 
 
 Figure 1 shows the worst event types according to health-related measures (injuries, fatalities, and total), while Figure 2 shows these for economic-related measures (property damage, crop damage, and total). As seen in Figures 1 and 2 it is clear that tornados are the most harmful type of weather, in both health and economic measures. Moreover, it is also seen that the next-worse event types pale in comparison to tornados across both measure types. 
