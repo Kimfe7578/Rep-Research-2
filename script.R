@@ -1,5 +1,6 @@
 filename <- "repdata_data_StormData.csv.bz2"
-#all.data <- subset(read.csv("repdata_data_StormData.csv.bz2", header=TRUE), !is.na(EVTYPE))
+#filename <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2"
+all.data <- subset(read.csv(filename, header=TRUE), !is.na(EVTYPE))
 raw.data <- all.data[1:5000,]
 
 

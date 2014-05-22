@@ -15,7 +15,7 @@ It is assumed that this data file is in the same working directory as this R mar
 
 The first step in the data processing is to read in the raw data set from the **original .csv.bz2 file**:
 
-```{r, results='asis', echo=TRUE, cache=FALSE}
+```{r chunk1, results='asis', echo=TRUE, cache=TRUE}
 raw.data <- subset(read.csv("repdata_data_StormData.csv.bz2", header=TRUE), !is.na(EVTYPE))
 ```
 
@@ -34,7 +34,7 @@ Now we extract out the unique set of weather events, and for each one get 1) the
 
 These are extracted as follows:
 
-```{r, results='asis', echo=TRUE, cache=FALSE}
+```{r chunk2, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1")}
 injuries <- c()
 fatalities <- c()
 totalhealth <- c()
@@ -56,7 +56,7 @@ for(i in 1:length(events)) {
 
 Now we sift through this data to get out the top 5 worst event types for each type of harm (health and economic loss). We use the total measurements in each case. This is accomplished as follows:
 
-```{r, results='asis', echo=TRUE, cache=FALSE}
+```{r chunk3, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1", "chunk2")}
 # Set number of top events to get.
 n <- 5
 
@@ -73,7 +73,7 @@ economic <- economic[with(economic, order(-tc)), ][1:min(n, nrow(economic)), ]
 
 We now construct a line graph to identify the top 5 most harmful weather types across both measure types, and to display their numeric damage comparrisons:
 
-```{r, results='asis', echo=TRUE, cache=FALSE}
+```{r chunk4, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1", "chunk2", "chunk3")}
 # Construct titles
 title1.str <- paste("Fig. 1: Overall Health Incidents (Top", min(n, nrow(health)), "Highest Totals)")
 title2.str <- paste("Fig 2: Overall Economic Impact (Largest", min(n, nrow(health)), "Total Losses)")
