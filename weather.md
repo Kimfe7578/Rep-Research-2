@@ -31,14 +31,37 @@ Now we extract out the unique set of weather events, and for each one get 1) the
 * Total number of incidents (= injuries + fatalities)
 
 **Economic loss measures for each weather event type:**
-* Total property damage (in USD) over period (taken from PROPDMG column)
-* Total crop damage (in USD) over period (taken from CROPDMG column)
+* Total property damage (in USD) over period (taken from PROPDMG together with PROPDMGEXP column)
+* Total crop damage (in USD) over period (taken from CROPDMG column together with PROPDMGEXP column)
 * Total loss (=property damage + crop damage)
 
-These are extracted as follows:
+For the property and crop damages, the exponent fields (e.g. PROPDMGEXP and CROPDMGEXP) were used to multiply the corresponding base numeric values (from PROPDMG and CROPDMG columns, respectively). Only the following exponent types were recognized (the rest were simply ignored):
+* k or K (= X 1,000)
+* m or M (= X 1,000,000)
+* b or B (= X 1,000,000,000)
+* All other values = X 1
+
+These data measures are extracted from the raw data as follows:
 
 
 ```r
+# This function takes a magnitude (PROPDMGEXP or CROPDMGEXP column value)
+# with a numeric value and performs the conversion. Recoginized formats are
+# k, K, m, M, b, and B. Others are ignored.
+at.mag <- function(num, mag) {
+    if (is.na(num)) {
+        num <- 0
+    }
+    if (is.element(as.factor(mag), as.factor(c("k", "K")))) {
+        num <- num * 1000
+    } else if (is.element(as.factor(mag), as.factor(c("m", "M")))) {
+        num <- num * 1e+06
+    } else if (is.element(as.factor(mag), as.factor(c("b", "B")))) {
+        num <- num * 1e+09
+    }
+    num
+}
+
 injuries <- c()
 fatalities <- c()
 totalhealth <- c()
@@ -52,8 +75,10 @@ for (i in 1:length(events)) {
     injuries[i] <- sum(as.numeric(curr$INJURIES), na.rm = TRUE)
     fatalities[i] <- sum(as.numeric(curr$FATALITIES), na.rm = TRUE)
     totalhealth[i] <- injuries[i] + fatalities[i]
-    propdam[i] <- sum(as.numeric(curr$PROPDMG), na.rm = TRUE)
-    cropdam[i] <- sum(as.numeric(curr$CROPDMG), na.rm = TRUE)
+    propdam[i] <- sum(sapply(1:nrow(curr), function(j) at.mag(curr$PROPDMG[j], 
+        curr$PROPDMGEXP[j])))
+    cropdam[i] <- sum(sapply(1:nrow(curr), function(j) at.mag(curr$CROPDMG[j], 
+        curr$CROPDMGEXP[j])))
     totalcost[i] <- propdam[i] + cropdam[i]
 }
 ```
@@ -121,4 +146,4 @@ with(economic, {
 ![plot of chunk chunk4](figure/chunk4.png) 
 
 
-Figure 1 shows the worst event types according to health-related measures (injuries, fatalities, and total), while Figure 2 shows these for economic-related measures (property damage, crop damage, and total). As seen in Figures 1 and 2 it is clear that tornados are the most harmful type of weather, in both health and economic measures. Moreover, it is also seen that the next-worse event types pale in comparison to tornados across both measure types. 
+Figure 1 shows the worst event types according to health-related measures (injuries, fatalities, and total), while Figure 2 shows these for economic-related measures (property damage, crop damage, and total). As seen in Figure 1, tornados are by a large margin the most harmful type of weather in terms of health impact. With respect to economic impact, floods followed by hurricanes and typhoons have caused the most damage.

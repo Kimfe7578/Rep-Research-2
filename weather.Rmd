@@ -121,4 +121,4 @@ with(economic,{
 })
 ```
 
-Figure 1 shows the worst event types according to health-related measures (injuries, fatalities, and total), while Figure 2 shows these for economic-related measures (property damage, crop damage, and total). As seen in Figures 1 and 2 it is clear that tornados are the most harmful type of weather, in both health and economic measures. Moreover, it is also seen that the next-worse event types pale in comparison to tornados across both measure types. 
+Figure 1 shows the worst event types according to health-related measures (injuries, fatalities, and total), while Figure 2 shows these for economic-related measures (property damage, crop damage, and total). As seen in Figure 1, tornados are by a large margin the most harmful type of weather in terms of health impact. With respect to economic impact, floods followed by hurricanes and typhoons have caused the most damage.
