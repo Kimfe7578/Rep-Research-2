@@ -28,13 +28,29 @@ Now we extract out the unique set of weather events, and for each one get 1) the
 * Total number of incidents (= injuries + fatalities)
 
 **Economic loss measures for each weather event type:**
-* Total property damage (in USD) over period (taken from PROPDMG column)
-* Total crop damage (in USD) over period (taken from CROPDMG column)
+* Total property damage (in USD) over period (taken from PROPDMG together with PROPDMGEXP column)
+* Total crop damage (in USD) over period (taken from CROPDMG column together with PROPDMGEXP column)
 * Total loss (=property damage + crop damage)
 
-These are extracted as follows:
+For the property and crop damages, the exponent fields (e.g. PROPDMGEXP and CROPDMGEXP) were used to multiply the corresponding base numeric values (from PROPDMG and CROPDMG columns, respectively). Only the following exponent types were recognized (the rest were simply ignored):
+* k or K (= X 1,000)
+* m or M (= X 1,000,000)
+* b or B (= X 1,000,000,000)
+* All other values = X 1
+
+These data measures are extracted from the raw data as follows:
 
 ```{r chunk2, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1")}
+# This function takes a magnitude (PROPDMGEXP or CROPDMGEXP column value) with a numeric value
+# and performs the conversion. Recoginized formats are k, K, m, M, b, and B. Others are ignored.
+at.mag <- function(num, mag) {
+  if(is.na(num)) { num <- 0 }
+	if(is.element(as.factor(mag), as.factor(c("k", "K")))) { num <- num * 1000 }
+	else if(is.element(as.factor(mag), as.factor(c("m", "M")))) { num <- num * 1000000 }
+	else if(is.element(as.factor(mag), as.factor(c("b", "B")))) { num <- num * 1000000000 }
+	num
+}
+
 injuries <- c()
 fatalities <- c()
 totalhealth <- c()
@@ -48,8 +64,8 @@ for(i in 1:length(events)) {
 	injuries[i] <- sum(as.numeric(curr$INJURIES), na.rm = TRUE)
 	fatalities[i] <- sum(as.numeric(curr$FATALITIES), na.rm = TRUE)
 	totalhealth[i] <- injuries[i] + fatalities[i]
-	propdam[i] <- sum(as.numeric(curr$PROPDMG), na.rm = TRUE)
-	cropdam[i] <- sum(as.numeric(curr$CROPDMG), na.rm = TRUE)
+	propdam[i] <- sum(sapply(1:nrow(curr), function(j) at.mag(curr$PROPDMG[j], curr$PROPDMGEXP[j])))
+	cropdam[i] <- sum(sapply(1:nrow(curr), function(j) at.mag(curr$CROPDMG[j], curr$CROPDMGEXP[j])))
 	totalcost[i] <- propdam[i] + cropdam[i]
 }
 ```
@@ -73,7 +89,7 @@ economic <- economic[with(economic, order(-tc)), ][1:min(n, nrow(economic)), ]
 
 We now construct a line graph to identify the top 5 most harmful weather types across both measure types, and to display their numeric damage comparrisons:
 
-```{r chunk4, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1", "chunk2", "chunk3")}
+```{r chunk4, results='asis', echo=TRUE, cache=TRUE, dependson=c("chunk1", "chunk2", "chunk3"), fig.width=12, fig.height=10}
 # Construct titles
 title1.str <- paste("Fig. 1: Overall Health Incidents (Top", min(n, nrow(health)), "Highest Totals)")
 title2.str <- paste("Fig 2: Overall Economic Impact (Largest", min(n, nrow(health)), "Total Losses)")
